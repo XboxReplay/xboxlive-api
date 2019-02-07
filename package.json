@@ -1,15 +1,15 @@
 {
     "name": "@xboxreplay/xboxlive-api",
     "description": "Simple Xbox Live API wrapper.",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "keywords": [
         "xboxreplay",
         "xboxlive",
-        "auth"
+        "api"
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/XboxReplay/xboxlive-auth"
+        "url": "https://github.com/XboxReplay/xboxlive-api"
     },
     "license": "MIT",
     "types": "./dist/index.d.ts",
