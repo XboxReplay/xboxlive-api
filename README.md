@@ -150,7 +150,7 @@ getPlayerScreenshots(
 
 **getPlayerGameclips** - Returns targeted player's gameclips:
 ```
-getPlayerScreenshots(
+getPlayerGameclips(
     gamertag: string,
     authorization: {
         userHash: string,
