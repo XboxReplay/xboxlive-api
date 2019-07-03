@@ -79,14 +79,14 @@ getPlayerSettings(
     };
     settings?: [
         'GameDisplayPicRaw' |
-		'Gamerscore' |
-		'Gamertag' |
-		'AccountTier' |
-		'XboxOneRep' |
-		'PreferredColor' |
-		'RealName' |
-		'Bio' |
-		'Location'
+        'Gamerscore' |
+        'Gamertag' |
+        'AccountTier' |
+        'XboxOneRep' |
+        'PreferredColor' |
+        'RealName' |
+        'Bio' |
+        'Location'
     ];
 ): Promise<{
     id: string;
@@ -102,7 +102,7 @@ getPlayerScreenshots(
         userHash: string;
         XSTSToken: string;
     },
-    maxItems: number = 25
+    maxItems?: number = 25
 ): Promise<{
     screenshots: {
         screenshotId: string;
@@ -156,7 +156,7 @@ getPlayerGameclips(
         userHash: string,
         XSTSToken: string
     },
-    maxItems: number = 25
+    maxItems?: number = 25
 ): Promise<{
     gameClips: {
         gameClipId: string;
