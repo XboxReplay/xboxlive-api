@@ -9,7 +9,7 @@ $ npm install @xboxreplay/xboxlive-api
 
 ### Clone
 ```
-$ git clone git@github.com:XboxReplay/xboxlive-api.git
+$ git clone https://github.com/XboxReplay/xboxlive-auth.git
 ```
 
 ### Build
@@ -28,8 +28,8 @@ $ npm run test
 import XboxLiveAPI from '@xboxreplay/xboxlive-api';
 
 XboxLiveAPI.getPlayerSettings('Zeny IC', {
-    userHash: '1890318589445465111',
-    XSTSToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhIjoiYiJ9.iMrN7XT_jCcRXWKwUo_JPWeRO75dBOGTzerAO'
+    userHash: 'YOUR_OWN_USER_HASH',
+    XSTSToken: 'YOUR_OWN_XSTS_TOKEN'
 }, ['GameDisplayPicRaw', 'Gamerscore', 'Location'])
     .then(console.info)
     .catch(console.error);
@@ -213,7 +213,7 @@ call(
         userHash: string;
         XSTSToken: string;
     };
-    properties?: {
+    options?: {
         method?: string; // HTTP method
         payload?: any; // Body payload for PATCH | POST | PUT requests
         qs?: any; // Query String

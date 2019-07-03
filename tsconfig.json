@@ -5,11 +5,9 @@
         "removeComments": true,
         "noImplicitAny": true,
         "strict": true,
-        "declaration": true,
-        "outDir": "./dist",
-        "typeRoots": [
-            "./node_modules/@types/"
-        ]
+        "outDir": "./dist"
     },
-    "include": ["./src/**/*"]
+    "include": [
+        "./src/**/*"
+    ]
 }
