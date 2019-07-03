@@ -9,7 +9,7 @@ $ npm install @xboxreplay/xboxlive-api
 
 ### Clone
 ```
-$ git clone https://github.com/XboxReplay/xboxlive-auth.git
+$ git clone https://github.com/XboxReplay/xboxlive-api.git
 ```
 
 ### Build
