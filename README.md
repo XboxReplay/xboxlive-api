@@ -97,7 +97,7 @@ getPlayerSettings(
 **getPlayerScreenshots** - Returns targeted player's screenshots:
 ```
 getPlayerScreenshots(
-    gamertag: string,
+    gamertag: string, // Or a valid XUID
     authorization: {
         userHash: string;
         XSTSToken: string;
@@ -154,7 +154,7 @@ getPlayerScreenshots(
 **getPlayerGameclips** - Returns targeted player's gameclips:
 ```
 getPlayerGameclips(
-    gamertag: string,
+    gamertag: string, // Or a valid XUID
     authorization: {
         userHash: string,
         XSTSToken: string
@@ -226,6 +226,9 @@ call(
     }
 ): Promise<any>
 ```
+
+### Should I use XUIDs insteads of Gamertags?
+`getPlayerGameclips` and `getPlayerScreenshots` methods resolve player's XUID thanks to the specified gamertag which requires an additional request to be made internally (`getPlayerXUID`). If a valid XUID is used instead (during pagination for instance), this may speed up your request.
 
 ### Where can I find additional Xbox Live API URIs?
 Please refer to https://docs.microsoft.com/en-us/windows/uwp/xbox-live/xbox-live-rest/uri/atoc-xboxlivews-reference-uris.
