@@ -1,6 +1,6 @@
 import * as request from 'request';
 import * as XboxLiveAPIError from './error';
-import * as HTTPStatusCodes from 'http-status-codes';
+import * as HTTPStatusCodes from './http-status-codes';
 import { join } from 'path';
 
 import {
@@ -44,6 +44,11 @@ const _isCallStatusCodeValid = (statusCode: number): boolean =>
         HTTPStatusCodes.NO_CONTENT,
         HTTPStatusCodes.CREATED
     ].indexOf(statusCode) !== -1;
+
+const _isXUID = (entry: any) => {
+    const n = Number(entry);
+    return !isNaN(n) && String(n).length > 15;
+};
 
 // ***** PUBLIC METHODS ***** //
 
@@ -98,7 +103,7 @@ export const getPlayerXUID = async (
     gamertag: string,
     authorization: XBLAuthorization
 ): Promise<string> => {
-    if (!isNaN(Number(gamertag)) && String(gamertag).length === 16) {
+    if (_isXUID(gamertag)) {
         return gamertag;
     }
 
