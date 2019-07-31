@@ -111,7 +111,7 @@ declare namespace XboxLiveAPI {
         };
     };
 
-    type getUGCQueryString = {
+    type GetUGCQueryString = {
         maxItems?: number;
         continuationToken?: string;
     };
@@ -152,13 +152,13 @@ declare namespace XboxLiveAPI {
     function getPlayerScreenshots(
         gamertag: string,
         authorization: XBLAuthorization,
-        qs?: getUGCQueryString | number
+        qs?: GetUGCQueryString | number
     ): Promise<PlayerScreenshotsResponse>;
 
     function getPlayerGameclips(
         gamertag: string,
         authorization: XBLAuthorization,
-        qs?: getUGCQueryString | number
+        qs?: GetUGCQueryString | number
     ): Promise<PlayerGameclipsResponse>;
 }
 

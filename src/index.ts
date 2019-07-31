@@ -12,7 +12,7 @@ import {
     PlayerGameclipsResponse,
     Setting,
     PlayerSettingsResponse,
-    getUGCQueryString
+    GetUGCQueryString
 } from '../';
 
 // ***** DEFINITIONS ***** //
@@ -135,7 +135,7 @@ export const getPlayerSettings = async (
 export const getPlayerScreenshots = async (
     gamertag: string,
     authorization: XBLAuthorization,
-    qs: getUGCQueryString | number = {}
+    qs: GetUGCQueryString | number = {}
 ): Promise<PlayerScreenshotsResponse> => {
     const playerXUID = await getPlayerXUID(gamertag, authorization);
 
@@ -160,7 +160,7 @@ export const getPlayerScreenshots = async (
 export const getPlayerGameclips = async (
     gamertag: string,
     authorization: XBLAuthorization,
-    qs: getUGCQueryString | number = {}
+    qs: GetUGCQueryString | number = {}
 ): Promise<PlayerGameclipsResponse> => {
     const playerXUID = await getPlayerXUID(gamertag, authorization);
 
