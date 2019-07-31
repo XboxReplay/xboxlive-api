@@ -227,7 +227,7 @@ call(
 ): Promise<any>
 ```
 
-### Should I use XUIDs insteads of Gamertags?
+### Should I use XUIDs instead of Gamertags?
 `getPlayerGameclips` and `getPlayerScreenshots` methods resolve player's XUID thanks to the specified gamertag which requires an additional request to be made internally (`getPlayerXUID`). If a valid XUID is used instead (during pagination for instance), this may speed up your request.
 
 ### Where can I find additional Xbox Live API URIs?
