@@ -111,6 +111,11 @@ declare namespace XboxLiveAPI {
         };
     };
 
+    type getUGCQueryString = {
+        maxItems?: number;
+        continuationToken?: string;
+    };
+
     type Setting =
         | 'GameDisplayPicRaw'
         | 'Gamerscore'
@@ -147,13 +152,13 @@ declare namespace XboxLiveAPI {
     function getPlayerScreenshots(
         gamertag: string,
         authorization: XBLAuthorization,
-        maxItems?: number
+        qs?: getUGCQueryString | number
     ): Promise<PlayerScreenshotsResponse>;
 
     function getPlayerGameclips(
         gamertag: string,
         authorization: XBLAuthorization,
-        maxItems?: number
+        qs?: getUGCQueryString | number
     ): Promise<PlayerGameclipsResponse>;
 }
 

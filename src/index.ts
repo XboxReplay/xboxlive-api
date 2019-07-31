@@ -1,5 +1,5 @@
 import * as request from 'request';
-import * as XboxLiveAPIError from './XboxLiveAPIError';
+import * as XboxLiveAPIError from './error';
 import * as HTTPStatusCodes from 'http-status-codes';
 import { join } from 'path';
 
@@ -11,7 +11,8 @@ import {
     PlayerScreenshotsResponse,
     PlayerGameclipsResponse,
     Setting,
-    PlayerSettingsResponse
+    PlayerSettingsResponse,
+    getUGCQueryString
 } from '../';
 
 // ***** DEFINITIONS ***** //
@@ -134,27 +135,49 @@ export const getPlayerSettings = async (
 export const getPlayerScreenshots = async (
     gamertag: string,
     authorization: XBLAuthorization,
-    maxItems: number = 25
+    qs: getUGCQueryString | number = {}
 ): Promise<PlayerScreenshotsResponse> => {
     const playerXUID = await getPlayerXUID(gamertag, authorization);
+
+    // Prevent breaking change with 1.0.0 version
+    if (typeof qs === 'number') {
+        qs = { maxItems: qs };
+    }
+
     return call(
         XBOX_LIVE_DOMAINS.screenshots +
             join('users', `xuid(${playerXUID})`, 'screenshots'),
         authorization,
-        { qs: { maxItems } }
+        {
+            qs: {
+                maxItems: qs.maxItems || 25,
+                continuationToken: qs.continuationToken
+            }
+        }
     );
 };
 
 export const getPlayerGameclips = async (
     gamertag: string,
     authorization: XBLAuthorization,
-    maxItems: number = 25
+    qs: getUGCQueryString | number = {}
 ): Promise<PlayerGameclipsResponse> => {
     const playerXUID = await getPlayerXUID(gamertag, authorization);
+
+    // Prevent breaking change with 1.0.0 version
+    if (typeof qs === 'number') {
+        qs = { maxItems: qs };
+    }
+
     return call(
         XBOX_LIVE_DOMAINS.gameclips +
             join('users', `xuid(${playerXUID})`, 'clips'),
         authorization,
-        { qs: { maxItems } }
+        {
+            qs: {
+                maxItems: qs.maxItems || 25,
+                continuationToken: qs.continuationToken
+            }
+        }
     );
 };

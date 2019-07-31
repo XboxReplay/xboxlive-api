@@ -102,7 +102,10 @@ getPlayerScreenshots(
         userHash: string;
         XSTSToken: string;
     },
-    maxItems?: number = 25
+    qs: {
+        maxItems?: number = 25
+        continuationToken?: string
+    }
 ): Promise<{
     screenshots: {
         screenshotId: string;
@@ -156,7 +159,10 @@ getPlayerGameclips(
         userHash: string,
         XSTSToken: string
     },
-    maxItems?: number = 25
+    qs: {
+        maxItems?: number = 25
+        continuationToken?: string
+    }
 ): Promise<{
     gameClips: {
         gameClipId: string;
