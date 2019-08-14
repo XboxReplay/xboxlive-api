@@ -1,6 +1,6 @@
 import * as request from 'request';
-import * as XboxLiveAPIError from './error';
 import * as HTTPStatusCodes from './http-status-codes';
+import * as XboxLiveAPIError from './error';
 import { join } from 'path';
 
 import {
@@ -59,6 +59,7 @@ export const call = (
 ): Promise<any> => {
     const { userHash, XSTSToken } = authorization;
     const method: RequestHTTPMethod = options.method || 'GET';
+    const headers = options.headers || {};
     const qs = options.qs ? options.qs : void 0;
     const payload = options.payload || void 0;
 
@@ -69,10 +70,12 @@ export const call = (
                 qs,
                 json: payload === void 0 ? true : payload,
                 followRedirect: true,
+                gzip: true,
                 headers: {
                     ...BASE_HEADERS,
                     'x-xbl-contract-version': 2,
-                    Authorization: `XBL3.0 x=${userHash};${XSTSToken}`
+                    Authorization: `XBL3.0 x=${userHash};${XSTSToken}`,
+                    ...headers
                 },
                 method
             },

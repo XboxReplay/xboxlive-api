@@ -1,4 +1,9 @@
 declare namespace XboxLiveAPI {
+    type ErrorDetails = {
+        statusCode?: number;
+        reason?: string;
+    };
+
     type RequestHTTPMethod = 'GET' | 'PATCH' | 'POST' | 'PUT' | 'DELETE';
 
     type RequestHeaders = {
@@ -7,13 +12,9 @@ declare namespace XboxLiveAPI {
 
     type RequestOptions = {
         method?: RequestHTTPMethod;
+        headers?: RequestHeaders;
         payload?: any;
         qs?: any;
-    };
-
-    type ExtraErrorProperties = {
-        statusCode?: number;
-        reason?: string;
     };
 
     type MediaThumbnail = {

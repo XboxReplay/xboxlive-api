@@ -1,7 +1,7 @@
 {
     "name": "@xboxreplay/xboxlive-api",
     "description": "Simple Xbox Live API wrapper.",
-    "version": "2.1.1",
+    "version": "2.2.0",
     "keywords": [
         "xboxreplay",
         "xboxlive",
@@ -26,6 +26,7 @@
         "test": "./node_modules/.bin/jest --runInBand"
     },
     "dependencies": {
+        "@xboxreplay/error": "^0.1.0",
         "request": "^2.88.0"
     },
     "peerDependencies": {
