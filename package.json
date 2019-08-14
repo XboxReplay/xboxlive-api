@@ -1,7 +1,7 @@
 {
     "name": "@xboxreplay/xboxlive-api",
     "description": "Simple Xbox Live API wrapper.",
-    "version": "2.3.0",
+    "version": "2.3.1",
     "keywords": [
         "xboxreplay",
         "xboxlive",
@@ -30,7 +30,7 @@
         "request": "^2.88.0"
     },
     "peerDependencies": {
-        "@xboxreplay/xboxlive-auth": "^1.0.0"
+        "@xboxreplay/xboxlive-auth": "^2.2.0"
     },
     "devDependencies": {
         "@types/jest": "^24.0.15",
