@@ -1,4 +1,4 @@
-import { XboxReplayError } from '@xboxreplay/error';
+import { XboxReplayError } from '@xboxreplay/errors';
 import * as HTTPStatusCodes from './http-status-codes';
 
 const errors = {

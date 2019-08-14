@@ -1,6 +1,6 @@
 import * as request from 'request';
 import * as HTTPStatusCodes from './http-status-codes';
-import * as XboxLiveAPIError from './error';
+import * as errors from './errors';
 import { join } from 'path';
 
 import {
@@ -80,18 +80,18 @@ export const call = (
                 method
             },
             (err: any, response: request.Response, body: any) => {
-                if (err) return reject(XboxLiveAPIError.internal(err.message));
+                if (err) return reject(errors.internal(err.message));
                 const statusCode = response.statusCode;
 
                 if (statusCode === HTTPStatusCodes.FORBIDDEN) {
-                    return reject(XboxLiveAPIError.forbidden());
+                    return reject(errors.forbidden());
                 } else if (statusCode === HTTPStatusCodes.UNAUTHORIZED) {
-                    return reject(XboxLiveAPIError.unauthorized());
+                    return reject(errors.unauthorized());
                 }
 
                 if (_isCallStatusCodeValid(response.statusCode) === false)
                     return reject(
-                        XboxLiveAPIError.requestError(
+                        errors.requestError(
                             `Got a request error for "${uri}"`,
                             response.statusCode
                         )
@@ -117,7 +117,7 @@ export const getPlayerXUID = async (
     );
 
     if (response.profileUsers[0] === void 0) {
-        throw XboxLiveAPIError.internal();
+        throw errors.internal();
     } else return response.profileUsers[0].id;
 };
 
@@ -134,7 +134,7 @@ export const getPlayerSettings = async (
     );
 
     if (response.profileUsers[0] === void 0) {
-        throw XboxLiveAPIError.internal();
+        throw errors.internal();
     }
 
     return response.profileUsers[0].settings;
