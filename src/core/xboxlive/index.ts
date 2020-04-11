@@ -48,18 +48,14 @@ const _getPlayerUGC = async <T>(
 	gamertag: string,
 	authorization: XBLAuthorization,
 	qs: GetUGCQueryString = {},
-	type: 'screenshots' | 'clips'
+	type: 'screenshots' | 'gameclips'
 ) =>
 	call<T>(
 		{
-			url: `${
-				xboxLiveConfig.uris[
-					type === 'screenshots' ? 'screenshots' : 'gameclips'
-				]
-			}/${join(
+			url: `${xboxLiveConfig.uris[type]}/${join(
 				'users',
 				`xuid(${await getPlayerXUID(gamertag, authorization)})`,
-				type
+				type === 'screenshots' ? 'screenshots' : 'clips'
 			)}`,
 			params: {
 				maxItems: qs.maxItems || 25,
@@ -209,7 +205,7 @@ export const getPlayerGameClips = (
 		gamertag,
 		authorization,
 		qs,
-		'clips'
+		'gameclips'
 	);
 
 export const getPlayerGameClipsFromActivityHistory = async (
