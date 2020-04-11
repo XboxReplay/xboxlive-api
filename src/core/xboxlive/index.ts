@@ -52,7 +52,11 @@ const _getPlayerUGC = async <T>(
 ) =>
 	call<T>(
 		{
-			url: `${xboxLiveConfig.uris.screenshots}/${join(
+			url: `${
+				xboxLiveConfig.uris[
+					type === 'screenshots' ? 'screenshots' : 'gameclips'
+				]
+			}/${join(
 				'users',
 				`xuid(${await getPlayerXUID(gamertag, authorization)})`,
 				type
