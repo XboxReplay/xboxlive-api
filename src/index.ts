@@ -123,6 +123,7 @@ export type GetActivityQueryString = {
 	excludeTypes?: IActivityTypeItems['items'];
 	contentTypes?: 'Game' | 'App';
 	startDate?: string;
+	includeSelf?: boolean;
 };
 
 export type ActivityHistoryResponse<T = any> = {

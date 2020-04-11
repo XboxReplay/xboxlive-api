@@ -186,7 +186,7 @@ export const getPlayerScreenshotsFromActivityHistory = async (
 	authorization: XBLAuthorization,
 	qs: Omit<
 		GetActivityQueryString,
-		'contentTypes' | 'activityTypes' | 'excludeTypes'
+		'contentTypes' | 'activityTypes' | 'excludeTypes' | 'includeSelf'
 	> = {}
 ): Promise<PlayerScreenshotsFromActivityHistoryResponse> =>
 	getPlayerActivityHistory(gamertag, authorization, {
@@ -213,7 +213,7 @@ export const getPlayerGameClipsFromActivityHistory = async (
 	authorization: XBLAuthorization,
 	qs: Omit<
 		GetActivityQueryString,
-		'contentTypes' | 'activityTypes' | 'excludeTypes'
+		'contentTypes' | 'activityTypes' | 'excludeTypes' | 'includeSelf'
 	> = {}
 ): Promise<PlayerGameClipsFromActivityHistoryResponse> =>
 	getPlayerActivityHistory(gamertag, authorization, {
