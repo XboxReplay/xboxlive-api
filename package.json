@@ -1,7 +1,7 @@
 {
     "name": "@xboxreplay/xboxlive-api",
     "description": "Simple Xbox Live API wrapper.",
-    "version": "3.0.2",
+    "version": "3.0.3",
     "keywords": [
         "xboxreplay",
         "xboxlive",

@@ -461,6 +461,7 @@ getPlayerActivityHistory(
         excludeTypes?: 'GameDVR' | 'Screenshot' | 'Achievement' | 'Played';
         contentTypes?: 'Game' | 'App';
         startDate?: string;
+        includeSelf?: boolean;
     };
 ): Promise<{
     numItems: number;
