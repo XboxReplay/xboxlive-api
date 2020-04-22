@@ -1,4 +1,4 @@
-import errors, { unauthorized } from '@xboxreplay/errors';
+import errors from '@xboxreplay/errors';
 import axios, { AxiosRequestConfig } from 'axios';
 import xboxLiveConfig from './config';
 import commonConfig from '../../config';
