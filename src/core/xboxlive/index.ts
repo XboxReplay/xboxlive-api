@@ -1,4 +1,4 @@
-import errors from '@xboxreplay/errors';
+import errors, { unauthorized } from '@xboxreplay/errors';
 import axios, { AxiosRequestConfig } from 'axios';
 import xboxLiveConfig from './config';
 import commonConfig from '../../config';
@@ -50,7 +50,7 @@ const _getPlayerUGC = async <T>(
 	const target =
 		_isXUID(gamertagOrXUID) === true
 			? `xuid(${gamertagOrXUID})`
-			: `gt(${encodeURIComponent(gamertagOrXUID)})`;
+			: `xuid(${await getPlayerXUID(gamertagOrXUID, authorization)})`;
 
 	return call<T>(
 		{
@@ -103,6 +103,10 @@ export const call = <T = any>(
 		.catch(err => {
 			if (!!err.__XboxReplay__) throw err;
 			else if (err.response?.status === 400) throw errors.badRequest();
+			else if (err.response?.status === 401) throw errors.unauthorized();
+			else if (err.response?.status === 403) throw errors.forbidden();
+			else if (err.response?.status === 429)
+				throw errors.build('Too many requests.', { statusCode: 429 });
 			else if (err.response?.status === 404)
 				throw errors.build('Not found.', { statusCode: 404 });
 			else throw errors.internal(err.message);
@@ -112,7 +116,7 @@ export const call = <T = any>(
 export const getPlayerXUID = async (
 	gamertag: string,
 	authorization: XBLAuthorization
-): Promise<string | null> => {
+): Promise<string> => {
 	if (_isXUID(gamertag)) {
 		return String(gamertag);
 	}
@@ -128,9 +132,9 @@ export const getPlayerXUID = async (
 		authorization
 	);
 
-	if (response.profileUsers[0] === void 0) {
+	if (response?.profileUsers?.[0]?.id === void 0) {
 		throw errors.internal("Could not resolve player's XUID.");
-	} else return response.profileUsers[0].id || null;
+	} else return response.profileUsers[0].id;
 };
 
 export const getPlayerSettings = async (
@@ -168,7 +172,7 @@ export const getPlayerActivityHistory = async (
 	const target =
 		_isXUID(gamertagOrXUID) === true
 			? `xuid(${gamertagOrXUID})`
-			: `gt(${encodeURIComponent(gamertagOrXUID)})`;
+			: `xuid(${await getPlayerXUID(gamertagOrXUID, authorization)})`;
 
 	return call<ActivityHistoryResponse>(
 		{
@@ -184,26 +188,26 @@ export const getPlayerActivityHistory = async (
 };
 
 export const getPlayerScreenshots = async (
-	gamertag: string,
+	gamertagOrXUID: string,
 	authorization: XBLAuthorization,
 	qs: GetUGCQueryString = {}
 ): Promise<PlayerScreenshotsResponse> =>
 	_getPlayerUGC<PlayerScreenshotsResponse>(
-		gamertag,
+		gamertagOrXUID,
 		authorization,
 		qs,
 		'screenshots'
 	);
 
 export const getPlayerScreenshotsFromActivityHistory = async (
-	gamertag: string,
+	gamertagOrXUID: string,
 	authorization: XBLAuthorization,
 	qs: Omit<
 		GetActivityQueryString,
 		'contentTypes' | 'activityTypes' | 'excludeTypes' | 'includeSelf'
 	> = {}
 ): Promise<PlayerScreenshotsFromActivityHistoryResponse> =>
-	getPlayerActivityHistory(gamertag, authorization, {
+	getPlayerActivityHistory(gamertagOrXUID, authorization, {
 		...qs,
 		contentTypes: 'Game',
 		activityTypes: 'Screenshot',
@@ -211,26 +215,26 @@ export const getPlayerScreenshotsFromActivityHistory = async (
 	});
 
 export const getPlayerGameClips = (
-	gamertag: string,
+	gamertagOrXUID: string,
 	authorization: XBLAuthorization,
 	qs: GetUGCQueryString = {}
 ): Promise<PlayerGameClipsResponse> =>
 	_getPlayerUGC<PlayerGameClipsResponse>(
-		gamertag,
+		gamertagOrXUID,
 		authorization,
 		qs,
 		'gameclips'
 	);
 
 export const getPlayerGameClipsFromActivityHistory = async (
-	gamertag: string,
+	gamertagOrXUID: string,
 	authorization: XBLAuthorization,
 	qs: Omit<
 		GetActivityQueryString,
 		'contentTypes' | 'activityTypes' | 'excludeTypes' | 'includeSelf'
 	> = {}
 ): Promise<PlayerGameClipsFromActivityHistoryResponse> =>
-	getPlayerActivityHistory(gamertag, authorization, {
+	getPlayerActivityHistory(gamertagOrXUID, authorization, {
 		...qs,
 		contentTypes: 'Game',
 		activityTypes: 'GameDVR',

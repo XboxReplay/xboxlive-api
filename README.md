@@ -488,5 +488,8 @@ call(
 ): Promise<any>
 ```
 
+### Should I use XUIDs instead of Gamertags?
+Some of exposed methods resolve player's XUID thanks to the specified gamertag which requires an additional request to be made internally (`getPlayerXUID`). If a valid XUID is used instead (during pagination for instance), this may speed up your request.
+
 ### Where can I find additional Xbox Live API URIs?
 Please refer to https://docs.microsoft.com/en-us/windows/uwp/xbox-live/xbox-live-rest/uri/atoc-xboxlivews-reference-uris.
