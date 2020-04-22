@@ -51,7 +51,7 @@ The fastest way to generate a valid authorization is to use our [XboxLive-Auth](
 
 ```javascript
 getPlayerXUID(
-    gamertag: string;
+    gamertagOrXUID: string;
     authorization: {
         userHash: string;
         XSTSToken: string;
@@ -63,7 +63,7 @@ getPlayerXUID(
 
 ```javascript
 getPlayerSettings(
-    gamertag: string;
+    gamertagOrXUID: string;
     authorization: {
         userHash: string;
         XSTSToken: string;
@@ -112,7 +112,7 @@ getPlayerSettings(
 
 ```javascript
 getPlayerScreenshots(
-    gamertag: string; // Or a valid XUID
+    gamertagOrXUID: string;
     authorization: {
         userHash: string;
         XSTSToken: string;
@@ -171,7 +171,7 @@ getPlayerScreenshots(
 
 ```javascript
 getPlayerScreenshotsFromActivityHistory(
-    gamertag: string; // Or a valid XUID
+    gamertagOrXUID: string;
     authorization: {
         userHash: string;
         XSTSToken: string;
@@ -276,7 +276,7 @@ getPlayerScreenshotsFromActivityHistory(
 
 ```javascript
 getPlayerGameClips(
-    gamertag: string, // Or a valid XUID
+    gamertagOrXUID: string;
     authorization: {
         userHash: string,
         XSTSToken: string
@@ -338,7 +338,7 @@ getPlayerGameClips(
 
 ```javascript
 getPlayerGameClipsFromActivityHistory(
-    gamertag: string; // Or a valid XUID
+    gamertagOrXUID: string;
     authorization: {
         userHash: string;
         XSTSToken: string;
@@ -448,7 +448,7 @@ getPlayerGameClipsFromActivityHistory(
 
 ```javascript
 getPlayerActivityHistory(
-    gamertag: string;
+    gamertagOrXUID: string;
     authorization: {
         userHash: string;
         XSTSToken: string;
@@ -476,9 +476,8 @@ getPlayerActivityHistory(
 ```javascript
 call(
     config: {
-        uri: string;
+        url: string;
         method: GET | PUT | POST | PATCH | DELETE,
-        params: any // querystring
         ... // Please refer to https://github.com/axios/axios#request-config for further information
     };
     authorization: {
@@ -488,9 +487,6 @@ call(
     XBLContractVersion?: number; // Default: 2
 ): Promise<any>
 ```
-
-### Should I use XUIDs instead of Gamertags?
-Some of exposed methods resolve player's XUID thanks to the specified gamertag which requires an additional request to be made internally (`getPlayerXUID`). If a valid XUID is used instead (during pagination for instance), this may speed up your request.
 
 ### Where can I find additional Xbox Live API URIs?
 Please refer to https://docs.microsoft.com/en-us/windows/uwp/xbox-live/xbox-live-rest/uri/atoc-xboxlivews-reference-uris.

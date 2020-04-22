@@ -33,10 +33,7 @@ type ProfileResponse = {
 //#endregion
 //#region private methods
 
-const _isXUID = (entry: any) => {
-	const n = Number(entry);
-	return !isNaN(n) && String(n).length > 15;
-};
+const _isXUID = (entry: string) => /^([0-9]+)$/g.test(entry);
 
 const _is2XX = (statusCode: number) => {
 	const s = String(statusCode);
@@ -45,16 +42,21 @@ const _is2XX = (statusCode: number) => {
 };
 
 const _getPlayerUGC = async <T>(
-	gamertag: string,
+	gamertagOrXUID: string,
 	authorization: XBLAuthorization,
 	qs: GetUGCQueryString = {},
 	type: 'screenshots' | 'gameclips'
-) =>
-	call<T>(
+) => {
+	const target =
+		_isXUID(gamertagOrXUID) === true
+			? `xuid(${gamertagOrXUID})`
+			: `gt(${encodeURIComponent(gamertagOrXUID)})`;
+
+	return call<T>(
 		{
 			url: `${xboxLiveConfig.uris[type]}/${join(
 				'users',
-				`xuid(${await getPlayerXUID(gamertag, authorization)})`,
+				target,
 				type === 'screenshots' ? 'screenshots' : 'clips'
 			)}`,
 			params: {
@@ -64,6 +66,7 @@ const _getPlayerUGC = async <T>(
 		},
 		authorization
 	);
+};
 
 //#endregion
 //#region public methods
@@ -131,15 +134,20 @@ export const getPlayerXUID = async (
 };
 
 export const getPlayerSettings = async (
-	gamertag: string,
+	gamertagOrXUID: string,
 	authorization: XBLAuthorization,
 	settings: Setting[] = []
 ): Promise<SettingsNode> => {
+	const target =
+		_isXUID(gamertagOrXUID) === true
+			? `xuid(${gamertagOrXUID})`
+			: `gt(${encodeURIComponent(gamertagOrXUID)})`;
+
 	const response = await call<ProfileResponse>(
 		{
 			url: `${xboxLiveConfig.uris.profile}/${join(
 				'users',
-				`gt(${encodeURIComponent(gamertag)})`,
+				target,
 				'settings'
 			)}`,
 			params: { settings: settings.join(',') }
@@ -153,21 +161,27 @@ export const getPlayerSettings = async (
 };
 
 export const getPlayerActivityHistory = async (
-	gamertag: string,
+	gamertagOrXUID: string,
 	authorization: XBLAuthorization,
 	qs: GetActivityQueryString = {}
-): Promise<ActivityHistoryResponse> =>
-	call<ActivityHistoryResponse>(
+): Promise<ActivityHistoryResponse> => {
+	const target =
+		_isXUID(gamertagOrXUID) === true
+			? `xuid(${gamertagOrXUID})`
+			: `gt(${encodeURIComponent(gamertagOrXUID)})`;
+
+	return call<ActivityHistoryResponse>(
 		{
 			url: `${xboxLiveConfig.uris.avty}/${join(
 				'users',
-				`xuid(${await getPlayerXUID(gamertag, authorization)})`,
+				target,
 				'activity/History'
 			)}`,
 			params: qs
 		},
 		authorization
 	);
+};
 
 export const getPlayerScreenshots = async (
 	gamertag: string,
