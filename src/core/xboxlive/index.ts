@@ -5,8 +5,9 @@ import commonConfig from '../../config';
 import { join } from 'path';
 
 import {
-	XBLAuthorization,
 	Setting,
+	XBLAuthorization,
+	ProfileResponse,
 	SettingsNode,
 	GetUGCQueryString,
 	PlayerScreenshotsResponse,
@@ -14,26 +15,17 @@ import {
 	GetActivityQueryString,
 	ActivityHistoryResponse,
 	PlayerScreenshotsFromActivityHistoryResponse,
-	PlayerGameClipsFromActivityHistoryResponse
+	PlayerGameClipsFromActivityHistoryResponse,
+	MediaHubScreenshotResponseNode,
+	MediaHubGameClipResponseNode,
+	MediaHubResponse,
+	GetMediaHubItemsPayload
 } from '../..';
 
-//#region typings
-
-type ProfileResponse = {
-	profileUsers: [
-		{
-			id: string;
-			hostId: string;
-			settings: SettingsNode;
-			isSponsoredUser: false;
-		}
-	];
-};
-
-//#endregion
 //#region private methods
 
-const _isXUID = (entry: string) => /^([0-9]+)$/g.test(entry);
+const _isXUID = (entry: string | number) =>
+	/^([0-9]+)$/g.test(entry.toString());
 
 const _is2XX = (statusCode: number) => {
 	const s = String(statusCode);
@@ -42,7 +34,7 @@ const _is2XX = (statusCode: number) => {
 };
 
 const _getPlayerUGC = async <T>(
-	gamertagOrXUID: string,
+	gamertagOrXUID: string | number,
 	authorization: XBLAuthorization,
 	qs: GetUGCQueryString = {},
 	type: 'screenshots' | 'gameclips'
@@ -50,7 +42,10 @@ const _getPlayerUGC = async <T>(
 	const target =
 		_isXUID(gamertagOrXUID) === true
 			? `xuid(${gamertagOrXUID})`
-			: `xuid(${await getPlayerXUID(gamertagOrXUID, authorization)})`;
+			: `xuid(${await getPlayerXUID(
+					gamertagOrXUID as string,
+					authorization
+			  )})`;
 
 	return call<T>(
 		{
@@ -62,6 +57,36 @@ const _getPlayerUGC = async <T>(
 			params: {
 				maxItems: qs.maxItems || 25,
 				continuationToken: qs.continuationToken
+			}
+		},
+		authorization
+	);
+};
+
+const _getFromMediaHub = async <
+	T = MediaHubScreenshotResponseNode | MediaHubGameClipResponseNode
+>(
+	gamertagOrXUID: string | number,
+	authorization: XBLAuthorization,
+	payload: GetMediaHubItemsPayload = {},
+	target: 'screenshots' | 'gameclips'
+): Promise<MediaHubResponse<T>> => {
+	const xuid =
+		_isXUID(gamertagOrXUID) === true
+			? gamertagOrXUID
+			: await getPlayerXUID(gamertagOrXUID as string, authorization);
+
+	return call<MediaHubResponse<T>>(
+		{
+			url: `https://mediahub.xboxlive.com/${target}/search`,
+			method: 'POST',
+			data: {
+				query: [`OwnerXuid eq ${xuid.toString()}`, payload.query]
+					.filter(q => !!q)
+					.join(' and '),
+				max: Math.min(payload.max || 100, 100),
+				skip: Math.max(payload.skip || 0, 0),
+				continuationToken: payload?.continuationToken
 			}
 		},
 		authorization
@@ -95,10 +120,7 @@ export const call = <T = any>(
 				throw errors.internal(
 					`Invalid response status code for "${config.url}", got "${response.status}".`
 				);
-			}
-
-			const body = response.data as T;
-			return body;
+			} else return response.data as T;
 		})
 		.catch(err => {
 			if (!!err.__XboxReplay__) throw err;
@@ -106,9 +128,15 @@ export const call = <T = any>(
 			else if (err.response?.status === 401) throw errors.unauthorized();
 			else if (err.response?.status === 403) throw errors.forbidden();
 			else if (err.response?.status === 429)
-				throw errors.build('Too many requests.', { statusCode: 429 });
+				throw errors.build('Too many requests.', {
+					statusCode: 429,
+					reason: 'TOO_MANY_REQUESTS'
+				});
 			else if (err.response?.status === 404)
-				throw errors.build('Not found.', { statusCode: 404 });
+				throw errors.build('Not found.', {
+					statusCode: 404,
+					reason: 'NOT_FOUND'
+				});
 			else throw errors.internal(err.message);
 		});
 };
@@ -134,18 +162,18 @@ export const getPlayerXUID = async (
 
 	if (response?.profileUsers?.[0]?.id === void 0) {
 		throw errors.internal("Could not resolve player's XUID.");
-	} else return response.profileUsers[0].id;
+	} else return response.profileUsers[0].id.toString();
 };
 
 export const getPlayerSettings = async (
-	gamertagOrXUID: string,
+	gamertagOrXUID: string | number,
 	authorization: XBLAuthorization,
 	settings: Setting[] = []
 ): Promise<SettingsNode> => {
 	const target =
 		_isXUID(gamertagOrXUID) === true
 			? `xuid(${gamertagOrXUID})`
-			: `gt(${encodeURIComponent(gamertagOrXUID)})`;
+			: `gt(${encodeURIComponent(gamertagOrXUID as string)})`;
 
 	const response = await call<ProfileResponse>(
 		{
@@ -165,14 +193,17 @@ export const getPlayerSettings = async (
 };
 
 export const getPlayerActivityHistory = async (
-	gamertagOrXUID: string,
+	gamertagOrXUID: string | number,
 	authorization: XBLAuthorization,
 	qs: GetActivityQueryString = {}
 ): Promise<ActivityHistoryResponse> => {
 	const target =
 		_isXUID(gamertagOrXUID) === true
 			? `xuid(${gamertagOrXUID})`
-			: `xuid(${await getPlayerXUID(gamertagOrXUID, authorization)})`;
+			: `xuid(${await getPlayerXUID(
+					gamertagOrXUID as string,
+					authorization
+			  )})`;
 
 	return call<ActivityHistoryResponse>(
 		{
@@ -188,7 +219,7 @@ export const getPlayerActivityHistory = async (
 };
 
 export const getPlayerScreenshots = async (
-	gamertagOrXUID: string,
+	gamertagOrXUID: string | number,
 	authorization: XBLAuthorization,
 	qs: GetUGCQueryString = {}
 ): Promise<PlayerScreenshotsResponse> =>
@@ -199,8 +230,20 @@ export const getPlayerScreenshots = async (
 		'screenshots'
 	);
 
+export const getPlayerScreenshotsFromMediaHub = (
+	gamertagOrXUID: string | number,
+	authorization: XBLAuthorization,
+	payload: GetMediaHubItemsPayload = {}
+) =>
+	_getFromMediaHub<MediaHubScreenshotResponseNode>(
+		gamertagOrXUID,
+		authorization,
+		payload,
+		'screenshots'
+	);
+
 export const getPlayerScreenshotsFromActivityHistory = async (
-	gamertagOrXUID: string,
+	gamertagOrXUID: string | number,
 	authorization: XBLAuthorization,
 	qs: Omit<
 		GetActivityQueryString,
@@ -215,7 +258,7 @@ export const getPlayerScreenshotsFromActivityHistory = async (
 	});
 
 export const getPlayerGameClips = (
-	gamertagOrXUID: string,
+	gamertagOrXUID: string | number,
 	authorization: XBLAuthorization,
 	qs: GetUGCQueryString = {}
 ): Promise<PlayerGameClipsResponse> =>
@@ -226,8 +269,20 @@ export const getPlayerGameClips = (
 		'gameclips'
 	);
 
+export const getPlayerGameClipsFromMediaHub = (
+	gamertagOrXUID: string | number,
+	authorization: XBLAuthorization,
+	payload: GetMediaHubItemsPayload = {}
+) =>
+	_getFromMediaHub<MediaHubGameClipResponseNode>(
+		gamertagOrXUID,
+		authorization,
+		payload,
+		'gameclips'
+	);
+
 export const getPlayerGameClipsFromActivityHistory = async (
-	gamertagOrXUID: string,
+	gamertagOrXUID: string | number,
 	authorization: XBLAuthorization,
 	qs: Omit<
 		GetActivityQueryString,

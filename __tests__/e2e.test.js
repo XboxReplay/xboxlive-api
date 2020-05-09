@@ -6,8 +6,10 @@ const {
 	getPlayerSettings,
 	getPlayerActivityHistory,
 	getPlayerGameClips,
+	getPlayerGameClipsFromMediaHub,
 	getPlayerGameClipsFromActivityHistory,
 	getPlayerScreenshots,
+	getPlayerScreenshotsFromMediaHub,
 	getPlayerScreenshotsFromActivityHistory
 } = require('../src');
 
@@ -135,12 +137,12 @@ const successCase_getPlayerScreenshots = () =>
 		getPlayerScreenshots(
 			'Major Nelson',
 			{ XSTSToken, userHash },
-			{ maxItems: 1 }
+			{ maxItems: 0 }
 		),
 		getPlayerScreenshots(
 			'2584878536129841',
 			{ XSTSToken, userHash },
-			{ maxItems: 1 }
+			{ maxItems: 0 }
 		)
 	]).catch(err => {
 		console.error(err);
@@ -152,12 +154,12 @@ const successCase_getPlayerGameClips = () =>
 		getPlayerGameClips(
 			'Major Nelson',
 			{ XSTSToken, userHash },
-			{ maxItems: 1 }
+			{ maxItems: 0 }
 		),
 		getPlayerGameClips(
 			'2584878536129841',
 			{ XSTSToken, userHash },
-			{ maxItems: 1 }
+			{ maxItems: 0 }
 		)
 	]).catch(err => {
 		console.error(err);
@@ -169,12 +171,12 @@ const successCase_getPlayerScreenshotsFromActivityHistory = () =>
 		getPlayerScreenshotsFromActivityHistory(
 			'Major Nelson',
 			{ XSTSToken, userHash },
-			{ numItems: 1 }
+			{ numItems: 0 }
 		),
 		getPlayerScreenshotsFromActivityHistory(
 			'2584878536129841',
 			{ XSTSToken, userHash },
-			{ numItems: 1 }
+			{ numItems: 0 }
 		)
 	]).catch(err => {
 		console.error(err);
@@ -198,6 +200,38 @@ const successCase_getPlayerGameClipsFromActivityHistory = () =>
 		process.exit(1);
 	});
 
+const successCase_getPlayerScreenshotsFromMediaHub = () =>
+	Promise.all([
+		getPlayerScreenshotsFromMediaHub('Major Nelson', {
+			XSTSToken,
+			userHash
+		}),
+		getPlayerScreenshotsFromMediaHub('2584878536129841', {
+			XSTSToken,
+			userHash
+		})
+	]).catch(err => {
+		console.error(err);
+		process.exit(1);
+	});
+
+const successCase_getPlayerGameClipsFromMediaHub = () =>
+	Promise.all([
+		getPlayerGameClipsFromMediaHub(
+			'Major Nelson',
+			{ XSTSToken, userHash },
+			{ numItems: 1 }
+		),
+		getPlayerGameClipsFromMediaHub(
+			'2584878536129841',
+			{ XSTSToken, userHash },
+			{ numItems: 1 }
+		)
+	]).catch(err => {
+		console.error(err);
+		process.exit(1);
+	});
+
 Promise.all([
 	successCase_getPlayerXUID(),
 	successCase_getPlayerSettings(),
@@ -205,7 +239,9 @@ Promise.all([
 	successCase_getPlayerScreenshots(),
 	successCase_getPlayerGameClips(),
 	successCase_getPlayerScreenshotsFromActivityHistory(),
-	successCase_getPlayerGameClipsFromActivityHistory()
+	successCase_getPlayerGameClipsFromActivityHistory(),
+	successCase_getPlayerScreenshotsFromMediaHub(),
+	successCase_getPlayerGameClipsFromMediaHub()
 ]).then(() => {
 	process.exit(0);
 });
