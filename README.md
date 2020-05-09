@@ -186,7 +186,7 @@ getPlayerScreenshotsFromMediaHub(
     };
 ): Promise<{
     continuationToken?: string;
-	values: {
+    values: {
         captureDate: string;
         contentId: string;
         contentLocators: Array<
@@ -407,7 +407,7 @@ getPlayerGameClipsFromMediaHub(
     };
 ): Promise<{
     continuationToken?: string;
-	values: {
+    values: {
         contentId: string;
         contentLocators: Array<
             | {
