@@ -2,6 +2,9 @@
 
 Simple Xbox Live API wrapper.
 
+### Warning
+This module **MUST** be used server side only to prevent [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) issues and credentials leak.
+
 ### Installation
 ```shell
 $ npm install @xboxreplay/xboxlive-api
