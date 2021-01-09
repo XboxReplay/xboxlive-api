@@ -1,4 +1,5 @@
 import axios, { Method } from 'axios';
+import commonConfig from '../../../config';
 
 import {
 	removeUndefinedFromObject,
@@ -7,13 +8,14 @@ import {
 
 //#region typings
 
+type Culture = 'en-US' | 'fr-FR';
 type QueryParameters = Record<string, string | number | undefined>;
 type XRPlayerMediaCategory = 'screenshots' | 'clips';
 type XRGetPlayerMediaOptions = {
 	limit?: number;
 	offset?: number;
 	title_ids?: number | string | (number | string)[];
-	culture?: 'en_US' | 'fr_FR';
+	culture?: Culture;
 };
 
 //#endregion
@@ -34,65 +36,54 @@ class XboxReplayAPI {
 
 	/**
 	 * Return recent "screenshots" for a targeted player
-	 * @param {string} target - Targeted player
+	 * @param {string} player - Targeted player
 	 * @param {object=} options - Request options
-	 * @returns {object} any
+	 * @returns {object} Screenshots
 	 */
 	public getPlayerScreenshots(
-		target: string,
+		player: string,
 		options: XRGetPlayerMediaOptions = {}
 	) {
-		return this.getPlayerMediaList(target, 'screenshots', options);
+		return this.getPlayerMediaList(player, 'screenshots', options);
 	}
 
 	/**
 	 * Return recent "clips" for a targeted player
-	 * @param {string} target - Targeted player
+	 * @param {string} player - Targeted player
 	 * @param {object=} options - Request options
-	 * @returns {object} any
+	 * @returns {object} Clips
 	 */
 	public getPlayerGameClips(
-		target: string,
+		player: string,
 		options: XRGetPlayerMediaOptions = {}
 	) {
-		return this.getPlayerMediaList(target, 'clips', options);
+		return this.getPlayerMediaList(player, 'clips', options);
 	}
 
 	/**
-	 * Create a valid Xbox Live signature header for XSAPI requests
-	 * @param {string} method - HTTP method
-	 * @param {string} url - Targeted URL with query parameters
-	 * @param {string=} XBLAuthorization [null] - Used XBL3.0 authorization
-	 * @param {object=} payload [null] - Used request payload
+	 * Return information about a targeted title
+	 * @param {string|number} titleId - Targeted title id
+	 * @param options - Request options
+	 * @returns {object} Game
 	 */
-	public getXBLRequestSignature(
-		method: Method,
-		url: string,
-		XBLAuthorization: string | null = null,
-		payload: Record<string, any> | null = null
+	public getGameByTitleId(
+		titleId: string | number,
+		options: { culture: Culture }
 	) {
-		return this.call(
-			'POST',
-			this.computeAPIUrl('/utils/partner/xbl-sign-request'),
-			null,
-			removeUndefinedFromObject({
-				method: method.toUpperCase(),
-				url,
-				payload: payload || void 0,
-				xbl_authorization: XBLAuthorization || void 0
-			})
-		);
+		return this.call('GET', `/games/${String(titleId)}`, {
+			culture: options.culture
+		});
 	}
 
 	//#endregion
 	//#region private methods
 
 	private getPlayerMediaList(
-		target: string,
+		player: string,
 		category: XRPlayerMediaCategory,
 		options: XRGetPlayerMediaOptions = {}
 	) {
-		const matchedTarget = matchPlayerIdentifier(target);
+		const identifier = matchPlayerIdentifier(player);
 		const params: QueryParameters = {
 			limit: options.limit,
 			offset: options.offset,
@@ -107,11 +98,12 @@ class XboxReplayAPI {
 			} else params.title_ids = String(options.title_ids);
 		}
 
-		return this.call(
-			'GET',
-			`/players/${matchedTarget.value}/${category}`,
-			params
-		);
+		const target =
+			identifier.type === 'gamertag'
+				? identifier.value.toLowerCase().replace(/ /g, '-')
+				: `xuid(${identifier.value})`;
+
+		return this.call('GET', `/players/${target}/${category}`, params);
 	}
 
 	private computeAPIUrl(path: string) {
@@ -134,10 +126,10 @@ class XboxReplayAPI {
 			params: (!!params && removeUndefinedFromObject(params)) || void 0,
 			headers: {
 				'XR-Client-Token': this.clientToken,
-				'User-Agent': 'xboxreplay/xboxlive-api'
+				'User-Agent': commonConfig.request.defaultUserAgent
 			},
 			data
-		});
+		}).then(res => res.data);
 	}
 
 	//#endregion
