@@ -13,14 +13,15 @@ $ npm install @xboxreplay/xboxlive-api
 ```javascript
 import { XSAPI } from '@xboxreplay/xboxlive-api';
 
-XSAPI.getPlayerSettings(
-	'Zeny IC',
-	XboxLiveAPI.concatXBLAuthorization(
-		'YOUR_OWN_USER_HASH',
-		'YOUR_OWN_XSTS_TOKEN'
-	),
-	['UniqueModernGamertag', 'GameDisplayPicRaw', 'Gamerscore', 'Location']
-)
+const XSAPIInstance = new XSAPI('XBL3.0 x=xxx;yyy');
+// const XSAPIInstance = new XSAPI({ userHash: 'xxx', XSTSToken: 'yyy' });
+
+XSAPIInstance.getPlayerSettings('Zeny IC', [
+	'UniqueModernGamertag',
+	'GameDisplayPicRaw',
+	'Gamerscore',
+	'Location'
+])
 	.then(console.info)
 	.catch(console.error);
 ```

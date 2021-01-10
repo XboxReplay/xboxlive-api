@@ -61,12 +61,12 @@ class XboxReplayAPI {
 	 * Return recent "screenshots" for a targeted player
 	 * @param {string} player - Targeted player
 	 * @param {object=} options - Request options
-	 * @returns {Promise<object>} Screenshots
+	 * @returns {Promise<any>} Screenshots
 	 */
 	public getPlayerScreenshots(
 		player: string,
 		options: XRGetPlayerMediaOptions = {}
-	) {
+	): Promise<any> {
 		return this.getPlayerMediaList(player, 'screenshots', options);
 	}
 
@@ -74,12 +74,12 @@ class XboxReplayAPI {
 	 * Return recent "clips" for a targeted player
 	 * @param {string} player - Targeted player
 	 * @param {object=} options - Request options
-	 * @returns {Promise<object>} Clips
+	 * @returns {Promise<any>} Clips
 	 */
 	public getPlayerGameClips(
 		player: string,
 		options: XRGetPlayerMediaOptions = {}
-	) {
+	): Promise<any> {
 		return this.getPlayerMediaList(player, 'clips', options);
 	}
 
@@ -87,12 +87,12 @@ class XboxReplayAPI {
 	 * Return information about a targeted title
 	 * @param {string|number} titleId - Targeted title id
 	 * @param options - Request options
-	 * @returns {Promise<object>} Game
+	 * @returns {Promise<any>} Game
 	 */
 	public getGameByTitleId(
 		titleId: string | number,
 		options: { culture: Culture }
-	) {
+	): Promise<any> {
 		return this.call('GET', `/games/${String(titleId)}`, {
 			culture: options.culture
 		});
@@ -101,11 +101,18 @@ class XboxReplayAPI {
 	//#endregion
 	//#region private methods
 
+	/**
+	 * Return recent media for a targeted player
+	 * @param {string} player - Targeted player
+	 * @param {string} category - Targeted category
+	 * @param {object=} options - Request options
+	 * @returns {Promise<any>} Media
+	 */
 	private getPlayerMediaList(
 		player: string,
 		category: XRPlayerMediaCategory,
 		options: XRGetPlayerMediaOptions = {}
-	) {
+	): Promise<any> {
 		const identifier = matchPlayerIdentifier(player);
 		const params: QueryParameters = {
 			limit: options.limit,
@@ -129,17 +136,30 @@ class XboxReplayAPI {
 		return this.call('GET', `/players/${target}/${category}`, params);
 	}
 
-	private computeAPIUrl(path: string) {
+	/**
+	 *
+	 * @param {string} path - Targeted path
+	 * @returns {string} Path
+	 */
+	private computeAPIUrl(path: string): string {
 		path = path.startsWith('/') === true ? path : `/${path}`;
 		return `${this.baseUrl}${path}`;
 	}
 
+	/**
+	 * Generic method to request any XboxReplay URL
+	 * @param {string} method - HTTP method
+	 * @param {string} path - Targeted path
+	 * @param {QueryParameters=} params - Query parameters
+	 * @param {any} data - Payload
+	 * @returns {Promise<any>} Response
+	 */
 	private async call(
 		method: Method,
 		path: string,
 		params?: QueryParameters | null,
 		data?: any
-	) {
+	): Promise<any> {
 		if (this.clientToken.length === 0) {
 			throw new Error('Missing "clientToken"');
 		}
