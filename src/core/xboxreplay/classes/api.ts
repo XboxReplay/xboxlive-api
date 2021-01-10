@@ -1,5 +1,6 @@
 import axios, { Method } from 'axios';
 import commonConfig from '../../../config';
+import { v4 } from 'uuid';
 
 import {
 	removeUndefinedFromObject,
@@ -22,23 +23,45 @@ type XRGetPlayerMediaOptions = {
 //#region public methods
 
 class XboxReplayAPI {
+	/**
+	 * Exposed for internal use only, please do not use nor edit
+	 */
+	public __XRHost__ = 'www.xboxreplay.net';
+
+	/**
+	 * Client token
+	 */
 	private readonly clientToken: string;
+
+	/**
+	 * Targeted API version
+	 */
 	private readonly apiVersion: string;
+
+	/**
+	 * XboxReplay targeted URL
+	 */
 	private readonly baseUrl: string;
+
+	/**
+	 * Telemetry unique indentifier
+	 */
+	private telemetryId: string;
 
 	//#region public methods
 
 	public constructor(clientToken: string, apiVersion = '2.0') {
 		this.clientToken = clientToken || '';
 		this.apiVersion = apiVersion;
-		this.baseUrl = `https://www.xboxreplay.net/api/v${this.apiVersion}`;
+		this.baseUrl = `https://${this.__XRHost__}/api/v${this.apiVersion}`;
+		this.telemetryId = `${v4().replace(/-/g, '')}/1`;
 	}
 
 	/**
 	 * Return recent "screenshots" for a targeted player
 	 * @param {string} player - Targeted player
 	 * @param {object=} options - Request options
-	 * @returns {object} Screenshots
+	 * @returns {Promise<object>} Screenshots
 	 */
 	public getPlayerScreenshots(
 		player: string,
@@ -51,7 +74,7 @@ class XboxReplayAPI {
 	 * Return recent "clips" for a targeted player
 	 * @param {string} player - Targeted player
 	 * @param {object=} options - Request options
-	 * @returns {object} Clips
+	 * @returns {Promise<object>} Clips
 	 */
 	public getPlayerGameClips(
 		player: string,
@@ -64,7 +87,7 @@ class XboxReplayAPI {
 	 * Return information about a targeted title
 	 * @param {string|number} titleId - Targeted title id
 	 * @param options - Request options
-	 * @returns {object} Game
+	 * @returns {Promise<object>} Game
 	 */
 	public getGameByTitleId(
 		titleId: string | number,
@@ -121,15 +144,24 @@ class XboxReplayAPI {
 			throw new Error('Missing "clientToken"');
 		}
 
-		return axios(this.computeAPIUrl(path), {
+		const response = await axios(this.computeAPIUrl(path), {
 			method,
 			params: (!!params && removeUndefinedFromObject(params)) || void 0,
 			headers: {
+				Accept: 'application/json',
+				'Accept-Encoding': 'gzip, deflate, compress',
+				'User-Agent': commonConfig.request.defaultUserAgent,
 				'XR-Client-Token': this.clientToken,
-				'User-Agent': commonConfig.request.defaultUserAgent
+				'XR-Telemetry-Id': this.telemetryId
 			},
 			data
-		}).then(res => res.data);
+		}).then(res => {
+			if (res.headers['xr-telemetry-id'] !== void 0)
+				this.telemetryId = res.headers['xr-telemetry-id'];
+			return res.data;
+		});
+
+		return response;
 	}
 
 	//#endregion

@@ -22,4 +22,8 @@ export const matchPlayerIdentifier = (
 export const removeUndefinedFromObject = (obj: Record<string, any>) =>
 	JSON.parse(JSON.stringify(obj));
 
+export const isXBLHostname = (hostname: string) =>
+	hostname.split('.').reverse().slice(0, 2).reverse().join('.') ===
+	'xboxlive.com';
+
 //#endregion
