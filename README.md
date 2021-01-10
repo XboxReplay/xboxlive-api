@@ -35,9 +35,12 @@ As the Xbox Services API may require additional information (such a signature he
 ```javascript
 import { XRSimpleAPI } from '@xboxreplay/xboxlive-api';
 
-const XRAPIInstance = new XRSimpleAPI('YOUR_CLIENT_TOKEN');
+const XRSimpleAPIInstance = new XRSimpleAPI('YOUR_CLIENT_TOKEN');
 
-XRAPIInstance.getPlayerScreenshots('Zeny IC', { limit: 1, culture: 'en-US' })
+XRSimpleAPIInstance.getPlayerScreenshots('Zeny IC', {
+	limit: 1,
+	culture: 'en-US'
+})
 	.then(console.info)
 	.catch(console.error);
 ```
